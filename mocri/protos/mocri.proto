@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package mocri;
+
+service Mocri {
+  rpc ListModels(ListModelsParams) returns (stream OcrModelInfo) {}
+  rpc BinarizeImage(BinarizationParams) returns (Image) {}
+  rpc SegmentLines(LineSegmentationParams) returns (stream Line) {}
+  rpc RecognizeText(RecognitionParams) returns (OcrText) {}
+}
+
+message ListModelsParams {
+    // No fields for now, maybe filtering in the future?
+}
+
+message BinarizationParams {
+    Image image = 1;
+    float threshold = 2;
+    float zoom = 3;
+    float escale = 4;
+    float border = 5;
+    int32 perc = 6;
+    int32 low = 7;
+    int32 high = 8;
+}
+
+message LineSegmentationParams {
+    Image image = 1;
+    enum Direction {
+        LR = 0;
+        RL = 1;
+        HORIZONTAL_LR = 2;
+        VERTICAL_LR = 3;
+    }
+    Direction direction = 2;
+    float scale = 3;
+    int32 maxColSeps = 4;
+    bool blackColSeps = 5;
+}
+
+message RecognitionParams {
+    Image image = 1;
+}
+
+message Image {
+    bytes imageData = 1;
+    string imageMime = 2;
+}
+
+message Line {
+    int32 offsetX = 1;
+    int32 offsetY = 2;
+    int32 width = 3;
+    int32 height = 4;
+}
+
+message OcrText {
+    string text = 1;
+}
+
+message OcrModelInfo {
+    string name = 1;
+    string description = 2;
+    repeated string scripts = 3;
+    repeated string graphemes = 4;
+}
