@@ -6,15 +6,14 @@ name = "pypi"
 
 
 [packages]
-
 grpcio = "*"
 kraken = "*"
+pillow-simd = "*"
 
 
 [requires]
-
 python_version = "3.6"
 
 
 [dev-packages]
-
+grpcio-tools = "*"

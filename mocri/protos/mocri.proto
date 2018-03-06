@@ -5,8 +5,15 @@ package mocri;
 service Mocri {
   rpc ListModels(ListModelsParams) returns (stream OcrModelInfo) {}
   rpc BinarizeImage(BinarizationParams) returns (Image) {}
-  rpc SegmentLines(LineSegmentationParams) returns (stream Line) {}
-  rpc RecognizeText(RecognitionParams) returns (OcrText) {}
+  rpc SegmentLines(LineSegmentationParams) returns (stream Box) {}
+  rpc RecognizeText(RecognitionParams) returns (stream OcrText) {}
+}
+
+enum Direction {
+    LR = 0;
+    RL = 1;
+    HORIZONTAL_LR = 2;
+    VERTICAL_LR = 3;
 }
 
 message ListModelsParams {
@@ -26,12 +33,6 @@ message BinarizationParams {
 
 message LineSegmentationParams {
     Image image = 1;
-    enum Direction {
-        LR = 0;
-        RL = 1;
-        HORIZONTAL_LR = 2;
-        VERTICAL_LR = 3;
-    }
     Direction direction = 2;
     float scale = 3;
     int32 maxColSeps = 4;
@@ -40,14 +41,20 @@ message LineSegmentationParams {
 
 message RecognitionParams {
     Image image = 1;
+    repeated Box lines = 2;
+    Direction direction = 3;
+    string modelName = 4;
+    int32 padding = 5;
+    bool normalize = 6;
+    bool bidiReorder = 7;
 }
 
 message Image {
-    bytes imageData = 1;
-    string imageMime = 2;
+    bytes data = 1;
+    string mimeType = 2;
 }
 
-message Line {
+message Box {
     int32 offsetX = 1;
     int32 offsetY = 2;
     int32 width = 3;
@@ -56,6 +63,8 @@ message Line {
 
 message OcrText {
     string text = 1;
+    repeated Box positions = 2;
+    repeated float confidences = 3;
 }
 
 message OcrModelInfo {
